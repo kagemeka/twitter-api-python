@@ -1,0 +1,36 @@
+version: '3.9'
+
+services:
+  api:
+    build:
+      context: $ROOT/api/env/
+      dockerfile:
+        docker/Dockerfile
+      target: dev
+    env_file:
+      - common.env
+    image: 
+      kagemeka/twitter-api
+    init: true
+    restart: on-failure
+    stdin_open: true
+    tty: true
+    volumes:
+      - type: tmpfs
+        target: /tmp/
+        read_only: false
+      - type: bind
+        source: $ROOT/api/
+        target: /root/api/
+      - type: bind
+        source: /tmp/.X11-unix
+        target: /tmp/.X11-unix 
+        read_only: false
+        volume:
+          nocopy: true
+      - type: bind
+        source: ~/.aws
+        target: /root/.aws
+        read_only: true
+    
+    working_dir: /root/api/
