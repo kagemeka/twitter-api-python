@@ -7,5 +7,3 @@ class PublicMetrics():
   following_count: int
   tweet_count: int
   listed_count: int
-
-
