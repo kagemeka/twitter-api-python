@@ -1,4 +1,8 @@
 import typing
+from dataclasses import (
+  asdict,
+)
+import pandas as pd
 from lib.twitter.auth import (
   GetAuthOnAWS,
 )
@@ -15,15 +19,16 @@ from . import (
 
 
 
+
 class GetUserInfos():
   def __call__(
     self,
-  ) -> typing.NoReturn:
+  ) -> pd.DataFrame:
     self.__get_usernames()
     self.__set_auth()
     self.__request()
-    return self.__users
-
+    self.__to_dataframe()
+    return self.__df
   
 
   def __set_auth(
@@ -36,7 +41,6 @@ class GetUserInfos():
     self.__auth = auth
   
   
-
   def __get_usernames(
     self,
   ) -> typing.NoReturn:
@@ -63,5 +67,21 @@ class GetUserInfos():
     )
     self.__users = users
 
-
-
+  
+  def __to_dataframe(
+    self,
+  ) -> typing.NoReturn:
+    users = self.__users
+    ls = []
+    for user in users:
+      pm = user.public_metrics
+      data = {
+        'id': user.id,
+        'name': user.name,
+        'username': user.username,
+        **asdict(pm),
+      }
+      ls.append(data)
+    self.__df = pd.DataFrame(
+      ls,
+    )
