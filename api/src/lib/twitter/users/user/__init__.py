@@ -6,9 +6,17 @@ from typing import (
 from datetime import (
   datetime,
 )
+from lib import (
+  DatetimeFromStr,
+)
 from .public_metrics import (
   PublicMetrics,
 )
+from .entities import (
+  ParseEntities,
+  Entities,
+)
+
 
 
 @dataclasses.dataclass
@@ -36,7 +44,7 @@ class User():
     str
   ] = None
   entities: Optional[
-    dict
+    Entities
   ] = None
   profile_image_url: Optional[
     str
@@ -47,7 +55,6 @@ class User():
   pinned_tweet_id: Optional[
     str
   ] = None
-
 
 
 
@@ -67,6 +74,8 @@ class ParseUser():
     user = User(**self.__data)
     self.__user = user
     self.__public_metrics()
+    self.__created_at()
+    self.__entities()
   
 
   def __public_metrics(
@@ -79,3 +88,25 @@ class ParseUser():
       **user.public_metrics,
     )
     user.public_metrics = pm
+  
+
+  def __created_at(
+    self,
+  ) -> typing.NoReturn:
+    user = self.__user
+    dt = user.created_at
+    if not dt: return
+    dt_from = DatetimeFromStr()
+    dt = dt_from.utc_format(dt)
+
+    user.created_at = dt
+  
+
+  def __entities(
+    self,
+  ) -> typing.NoReturn:
+    user = self.__user
+    e = user.entities
+    if e is None: return
+    parse = ParseEntities()
+    user.entities = parse(e)

@@ -13,10 +13,6 @@ from datetime import (
 import boto3
 import json
 
-
-
-  
-
 from lib.twitter.auth import (
   GetAuthOnAWS,
 )
@@ -54,56 +50,17 @@ from lib.twitter.users import (
 )
 
 
+from lib.adam import (
+  FetchAnimeUsernames,
+)
 
-class FetchAnimeUsernames():
-  
-  def __call__(
-    self,
-  ) -> typing.List[str]:
-    self.__donwload_csv()
-    self.__read_csv()
-    self.__get_usernames()
-    return self.__usernames
 
-  def __get_usernames(
-    self,
-  ) -> typing.NoReturn:
-    df = self.__df
-    names = df.twitter_username
-    names.dropna(inplace=True)
-    names = names.values
-    self.__usernames = names
-    
 
-  def __read_csv(
-    self,
-  ) -> typing.NoReturn:
-    self.__df = pd.read_csv(
-      self.__save_path,
-    )
-  
+from dataclasses import (
+  asdict,
+  fields,
+)
 
-  def __donwload_csv(
-    self,
-  ) -> typing.NoReturn:
-    s3 = boto3.resource('s3')
-    bucket = s3.Bucket(
-      'av-adam-entrance',
-    )
-    ls = bucket.objects.filter(
-      Prefix='akibasouken/',
-    )
-    ls = [o.key for o in ls]
-    ls.sort()
-    obj = ls[-1]
-    self.__save_path = (
-      '/tmp/data.csv'
-    )
-    bucket.Object(
-      obj,
-    ).download_file(
-      self.__save_path,
-    )
 
 
 def main():
@@ -111,14 +68,10 @@ def main():
   auth = get.secrets_manager(
     'adam-twitter',
   )
+  auth.bearer_token = 'AAAAAAAAAAAAAAAAAAAAAE5fRQEAAAAA3Nwl2V78Zu37SgutzF%2BsGHOXoVM%3DA9wydIOtKeo9nrSrzd47pglLEl5Tz32qQbgs4qB4sPqoN3NbeI'
   request = RequestUsers(auth)
 
-  user_fields = [
-    UserField.ID,
-    UserField.USERNAME,
-    UserField.NAME,
-    UserField.PUBLIC_METRICS,
-  ]
+
   user_fields = [
     field
     for field in UserField
@@ -134,17 +87,19 @@ def main():
 
   make = MakeParams()
   params = make(
-    user_fields=user_fields,   
+    user_fields=user_fields, 
+    expansions=expansions,
+    tweet_fields=tweet_fields,  
   )
-  
 
   fetch = FetchAnimeUsernames()
   usernames = fetch()
   users = request.by_usernames(
-    usernames=usernames,
+    usernames=usernames[:2],
     params=params,
   )
-  pprint(users[0])
+  pprint(users)
+
   # s3 = boto3.resource('s3')
   # bucket = s3.Bucket(
   #   'av-adam-entrance',
