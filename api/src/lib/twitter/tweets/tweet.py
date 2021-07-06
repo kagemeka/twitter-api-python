@@ -1,4 +1,5 @@
 import dataclasses
+import typing
 from typing import (
   Optional,
   List,
@@ -6,6 +7,8 @@ from typing import (
 from datetime import (
   datetime,
 )
+
+
 
 @dataclasses.dataclass
 class Tweet():
@@ -61,3 +64,34 @@ class Tweet():
     str
   ] = None
   source: Optional[str] = None
+
+
+
+class ParseTweet():
+  def __call__(
+    self,
+    data: dict,
+  ) -> Tweet:
+    self.__data = data
+    self.__parse()
+    return self.__user
+  
+
+  def __parse(
+    self,
+  ) -> typing.NoReturn:
+    user = Tweet(**self.__data)
+    self.__user = user
+    self.__public_metrics()
+  
+
+  def __public_metrics(
+    self,
+  ) -> typing.NoReturn:
+    user = self.__user
+    if not user.public_metrics:
+      return
+    pm = PublicMetrics(
+      **user.public_metrics,
+    )
+    user.public_metrics = pm

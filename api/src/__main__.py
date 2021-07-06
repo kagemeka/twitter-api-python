@@ -106,11 +106,19 @@ class FetchAnimeUsernames():
     )
 
 
+from dataclasses import (
+  asdict,
+  fields,
+)
+
+
+
 def main():
   get = GetAuthOnAWS()
   auth = get.secrets_manager(
     'adam-twitter',
   )
+  auth.bearer_token = 'AAAAAAAAAAAAAAAAAAAAAE5fRQEAAAAA3Nwl2V78Zu37SgutzF%2BsGHOXoVM%3DA9wydIOtKeo9nrSrzd47pglLEl5Tz32qQbgs4qB4sPqoN3NbeI'
   request = RequestUsers(auth)
 
   user_fields = [
@@ -144,7 +152,12 @@ def main():
     usernames=usernames,
     params=params,
   )
-  pprint(users[0])
+  user = users[0]
+  # user = asdict(user)
+  for k in fields(user):
+    v = getattr(user, k.name)
+    print(k.name, v, type(v))
+
   # s3 = boto3.resource('s3')
   # bucket = s3.Bucket(
   #   'av-adam-entrance',
