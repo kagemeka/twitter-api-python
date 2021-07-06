@@ -47,9 +47,25 @@ class RequestUsers():
 
   def by_usernames(
     self,
-    usernames: typing.List[str]
+    usernames: typing.List[
+      str
+    ],
+    params: dict,
   ) -> typing.List[User]:
-    ...
+    self.__url = (
+      'https://api.twitter.com'
+      '/2/users/by'
+    )
+    s = ','.join(usernames)
+    params['usernames'] = s
+    self.__params = params
+    self.__request()
+    res = self.__response
+    data = res.json()['data']
+    return [
+      ParseUser()(user)
+      for user in data
+    ]
 
 
   def __init__(

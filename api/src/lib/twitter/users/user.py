@@ -25,12 +25,29 @@ class User():
   withheld: Optional[
     dict
   ] = None
+  location: Optional[
+    str
+  ] = None
+  url: Optional[str] = None
+  description: Optional[
+    str
+  ] = None
+  verified: Optional[
+    str
+  ] = None
+  entities: Optional[
+    dict
+  ] = None
+  profile_image_url: Optional[
+    str
+  ] = None
   public_metrics: Optional[
     PublicMetrics
   ] = None
   pinned_tweet_id: Optional[
     str
   ] = None
+
 
 
 
