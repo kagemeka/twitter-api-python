@@ -7,7 +7,7 @@ from typing import (
 
 
 @dataclasses.dataclass
-class UserField():
+class UserFields():
   id: bool = True
   name: bool = True
   username: bool = True
