@@ -22,7 +22,7 @@ class Url():
 
 
 
-class ParseUrl():
+class ConvertUrl():
   def __call__(
     self,
     data: dict,
@@ -62,7 +62,7 @@ class Description():
 
 
 
-class ParseDescription():
+class ConvertDescription():
   def __call__(
     self,
     data: dict,
@@ -108,7 +108,7 @@ class Entities():
 
 
 
-class ParseEntities():
+class ConvertEntities():
   def __call__(
     self,
     data: dict,
@@ -124,7 +124,7 @@ class ParseEntities():
   ) -> typing.NoReturn:
     e = self.__e
     if e.url is None: return
-    e.url = ParseUrl()(e.url)
+    e.url = ConvertUrl()(e.url)
 
 
   def __description(
@@ -133,7 +133,7 @@ class ParseEntities():
     e = self.__e
     if e.description is None:
       return
-    parse = ParseDescription()
-    e.description = parse(
+    f = ConvertDescription()
+    e.description = f(
       e.description,
     )
