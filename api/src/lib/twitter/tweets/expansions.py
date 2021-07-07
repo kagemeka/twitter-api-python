@@ -15,7 +15,7 @@ class Id():
 
 @dataclasses.dataclass
 class ReferencedTweets():
-  id: Optional[Id] = None
+  id: Id = Id()
 
 
 
@@ -35,15 +35,15 @@ class Geo():
 @dataclasses.dataclass
 class Expansions():
   author_id: bool = False
-  referenced_tweets: Optional[
+  referenced_tweets: (
     ReferencedTweets
-  ] = None
+  ) = ReferencedTweets()
   in_reply_to_user_id: bool = (
     False
   )
-  attachments: Optional[
-    Attachments
-  ] = None
+  attachments: Attachments = (
+    Attachments()
+  )
 
 
   NAME = 'expansions'

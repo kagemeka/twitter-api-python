@@ -1,11 +1,19 @@
 import typing
 from typing import (
   Dict,
+  Optional,
 )
 import dataclasses
 from dataclasses import (
   fields,
 )
+
+
+
+@dataclasses.dataclass
+class Param():
+  name: str
+  string: str
 
 
 
@@ -20,26 +28,37 @@ class Params(
     ]]
   )
 
+  NAME: Optional[str]
+  
 
 
-
-class ParseParams():
+class ConvertParams():
   def __call__(
     self,
     params: Params,
-  ) -> typing.List[str]:
+  ) -> Param:
+    ls = self.__dfs(params)
+    s = ','.join(ls)
+    name = params.NAME
+    return Param(name, s)
+
+  
+  @classmethod
+  def __dfs(
+    cls,
+    params: Params,
+  ):
     ls = []
     for f in fields(params):
       f = f.name
       v = getattr(params, f)
-      if v is None: continue
       if v == False: continue
       if v == True:
         ls.append(f); continue
       ls += [
         f if s == 'self_'
         else f'{f}.{s}'  
-        for s in self(v)
+        for s in cls.__dfs(v)
       ]
     return ls
     
