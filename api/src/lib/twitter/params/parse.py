@@ -45,7 +45,8 @@ class ParseParam():
       if v == True:
         ls.append(f); continue
       ls += [
-        f'{f}.{s}'
+        f if s == 'self_'
+        else f'{f}.{s}'  
         for s in self(v)
       ]
     return ls
