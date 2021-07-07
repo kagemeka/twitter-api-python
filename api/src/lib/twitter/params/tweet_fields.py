@@ -7,7 +7,7 @@ from typing import (
 
 
 @dataclasses.dataclass
-class UserFields():
+class TweetFields():
   id: bool = True
   text: bool = True
   attachments: bool = False
@@ -40,6 +40,6 @@ class UserFields():
   reply_settings: bool = False
   source: bool = False
   withheld: bool = False
-  
+
 
   NAME = 'tweet.fields'
