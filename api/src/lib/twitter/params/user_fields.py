@@ -5,6 +5,7 @@ from typing import (
 )
 
 
+
 @dataclasses.dataclass
 class UserField():
   id: bool = True
@@ -25,8 +26,4 @@ class UserField():
   withheld: bool = False
 
 
-  @classmethod
-  def name(
-    cls,
-  ) -> str:
-    return 'user.fields'
+  NAME = 'user.fields'
