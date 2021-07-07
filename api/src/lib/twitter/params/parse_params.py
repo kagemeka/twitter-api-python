@@ -9,7 +9,7 @@ from dataclasses import (
 
 
 
-class Param(
+class Params(
   typing.Protocol,
 ):
 
@@ -23,23 +23,15 @@ class Param(
 
 
 
-class ParseParam():
+class ParseParams():
   def __call__(
     self,
-    param: Param,
+    params: Params,
   ) -> typing.List[str]:
-    self.__param = param
-    return self.__parse()
-
-
-  def __parse(
-    self,
-  ) -> typing.List[str]:
-    param = self.__param
     ls = []
-    for f in fields(param):
+    for f in fields(params):
       f = f.name
-      v = getattr(param, f)
+      v = getattr(params, f)
       if v is None: continue
       if v == False: continue
       if v == True:
