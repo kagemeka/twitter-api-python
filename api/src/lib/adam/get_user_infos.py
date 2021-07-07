@@ -13,6 +13,7 @@ from lib.twitter.users import (
   UserField,
   MakeParams,
 )
+from lib.twitter.users.expansions import Expansion
 from . import (
   FetchAnimeUsernames,
 )
