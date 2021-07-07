@@ -13,6 +13,8 @@ import typing
 import boto3
 import pandas as pd
 
+from lib.twitter.users.convert_user import public_metrics
+
 
 class FetchComicKeywords():
   def __call__(
@@ -82,6 +84,9 @@ import (
   ByUsernamesParams,
   MakeRequest,
 )
+from lib.twitter.users import (
+  ConvertUser,
+)
 
 from lib.twitter import (
   SendRequest,
@@ -98,6 +103,8 @@ def main():
   params = ByUsernamesParams(
     usernames=['TwitterDev'],
   )
+  f = params.user_fields
+  f.public_metrics = Truez
   request = make.by_usernames(
     params,
   )
@@ -106,9 +113,12 @@ def main():
     'adam-twitter',
   )
   send = SendRequest(auth)
-  res = send(request)
-  print(type(res))
-  print(request)
+  res = send(request).json()
+  convert = ConvertUser()
+  user = convert(
+    res['data'][0],
+  )
+  print(user)
 
 
 

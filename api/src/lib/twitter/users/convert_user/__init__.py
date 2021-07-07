@@ -13,7 +13,7 @@ from .public_metrics import (
   PublicMetrics,
 )
 from .entities import (
-  ParseEntities,
+  ConvertEntities,
   Entities,
 )
 
@@ -58,17 +58,17 @@ class User():
 
 
 
-class ParseUser():
+class ConvertUser():
   def __call__(
     self,
     data: dict,
   ) -> User:
     self.__data = data
-    self.__parse()
+    self.__convert()
     return self.__user
   
 
-  def __parse(
+  def __convert(
     self,
   ) -> typing.NoReturn:
     user = User(**self.__data)
@@ -98,7 +98,6 @@ class ParseUser():
     if not dt: return
     dt_from = DatetimeFromStr()
     dt = dt_from.utc_format(dt)
-
     user.created_at = dt
   
 
@@ -108,5 +107,5 @@ class ParseUser():
     user = self.__user
     e = user.entities
     if e is None: return
-    parse = ParseEntities()
-    user.entities = parse(e)
+    f = ConvertEntities()
+    user.entities = f(e)
