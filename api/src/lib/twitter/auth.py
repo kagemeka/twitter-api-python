@@ -25,7 +25,7 @@ class TwitterAuth():
 
 
 
-class GetAuthOnAWS():
+class GetAuthFrom():
   
   @classmethod
   def secrets_manager(
