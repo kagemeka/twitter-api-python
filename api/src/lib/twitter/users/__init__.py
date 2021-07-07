@@ -1,3 +1,6 @@
+from .expansions import (
+  Expansions,
+)
 from .user import (
   ParseUser,
   User,
@@ -5,9 +8,6 @@ from .user import (
 
 from .user_fields import (
   UserField,
-)
-from .expansions import (
-  Expansion,
 )
 
 from .make_params import (

@@ -6,10 +6,16 @@ from typing import (
 
 
 
+@dataclasses.dataclsas
+class Id():
+  self_: bool = False
+  author_id: bool = False
+
+
+
 @dataclasses.dataclass
 class ReferencedTweets():
-  id: bool = False
-  self_: bool = False
+  id: Optional[Id] = None
 
 
 
@@ -27,7 +33,7 @@ class Geo():
 
 
 @dataclasses.dataclass
-class TweetExpansions():
+class Expansions():
   author_id: bool = False
   referenced_tweets: Optional[
     ReferencedTweets

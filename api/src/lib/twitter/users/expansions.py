@@ -1,11 +1,13 @@
-import enum
-from enum import (
-  auto,
+import dataclasses
+import typing
+from typing import (
+  Optional,
 )
 
 
 
-class Expansion(
-  enum.Enum,
-):
-  PINNED_TWEET_ID = enum.auto()
+@dataclasses.dataclass
+class Expansions():
+  pinned_tweet_id: bool = False
+
+  NAME = 'expansions'
