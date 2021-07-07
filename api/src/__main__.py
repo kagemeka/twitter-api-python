@@ -63,7 +63,17 @@ class FetchComicKeywords():
     )
 
 
+from lib.twitter.auth import (
+  GetAuthOnAWS,
+)
 
+
+import requests
+
+from datetime import (
+  datetime,
+  timedelta,
+)
 
 def main():
   # get = GetUserInfos()
@@ -74,6 +84,62 @@ def main():
   fetch = FetchComicKeywords()
   words = fetch()
   pprint(words)
+  print(words.size)
+  get = GetAuthOnAWS()
+  auth = get.secrets_manager(
+    'adam-twitter',
+  )
+  token = (
+    'Bearer '
+    f'{auth.bearer_token}'
+  )
+  headers = {
+    'Authorization': token,
+  }
+  url = (
+    'https://api.twitter.com/'
+    '2/tweets/counts/recent'
+  )
+  end = datetime.now()
+  end -= timedelta(seconds=10)
+  start = end - timedelta(
+    days=1,
+  )
+  # print(start)
+  print(start.isoformat())
+  start = start.isoformat() + 'Z'
+  print(start)
+  end = end.isoformat() + 'Z'
+  for w in words:
+    params = {
+      'query': w,
+      'start_time': start,
+      'end_time': end,
+      # 'max_results': 100,
+    }
+    response = requests.get(
+      url,
+      headers=headers,
+      params=params,
+    ).json()
+    print(response)
+    # while 1:
+    #   response = requests.get(
+    #     url,
+    #     headers=headers,
+    #     params=params,
+    #   ).json()
+    #   meta = response.pop('meta')
+    #   token = meta.get('next_token', None)
+    #   if token is None:
+    #     break
+    #   params['next_token'] = token
+    #   print(token)
+    #   print(response)
+
+  print(auth)
+
+
 
 
 
