@@ -106,6 +106,10 @@ import (
   Params,
 )
 
+from lib.twitter.tweets import(
+  ConvertTweet,
+)
+
 
 def main():
   get = GetAuthFrom()
@@ -156,8 +160,12 @@ def main():
   make = MakeRequest()
   request = make(params)
   res = send(request).json()
-  pprint(res)
-
+  # pprint(res)
+  convert = ConvertTweet()
+  tweet = convert(
+    res['data'][0],
+  )
+  print(tweet)
 
 
   # get = GetUserInfos()

@@ -7,6 +7,9 @@ from typing import (
 from datetime import (
   datetime,
 )
+from .public_metrics import (
+  PublicMetrics,
+)
 
 
 
@@ -14,35 +17,33 @@ from datetime import (
 class Tweet():
   id: str
   text: str
-  created_at: Optional[
-    datetime
+  attachments: Optional[
+    dict
   ] = None
   author_id: Optional[
     str
   ] = None
+  context_annotations: (
+    Optional[List[dict]]
+  ) = None
   conversation_id: Optional[
     str
   ] = None
-  in_reply_to_user_id: (
-    Optional[str]
-  ) = None
-  referenced_tweets: Optional[
-    List[str]
-   ] = None
-  attachments: Optional[
+  created_at: Optional[
+    datetime
+  ] = None
+  entities: Optional[
     dict
   ] = None
   geo: Optional[
     dict
   ] = None
-  context_annotations: (
-    Optional[List[dict]]
+  in_reply_to_user_id: (
+    Optional[str]
   ) = None
-  entities: Optional[
-    dict
-  ] = None
-  withheld: Optional[
-    dict
+  lang: Optional[str] = None
+  possibly_sensitive: Optional[
+    bool
   ] = None
   public_metrics: Optional[
     dict
@@ -56,42 +57,44 @@ class Tweet():
   promoted_metrics: Optional[
     dict
   ] = None
-  possibly_sensitive: Optional[
-    bool
+  referenced_tweets: Optional[
+    List[str]
   ] = None
-  lang: Optional[str] = None
   reply_settings: Optional[
     str
   ] = None
   source: Optional[str] = None
+  withheld: Optional[
+    dict
+  ] = None
 
 
 
-class ParseTweet():
+class ConvertTweet():
   def __call__(
     self,
     data: dict,
   ) -> Tweet:
     self.__data = data
-    self.__parse()
-    return self.__user
+    self.__convert()
+    return self.__tweet
   
 
-  def __parse(
+  def __convert(
     self,
   ) -> typing.NoReturn:
-    user = Tweet(**self.__data)
-    self.__user = user
+    tweet = Tweet(
+      **self.__data,
+    )
+    self.__tweet = tweet
     self.__public_metrics()
   
 
   def __public_metrics(
     self,
   ) -> typing.NoReturn:
-    user = self.__user
-    if not user.public_metrics:
-      return
-    pm = PublicMetrics(
-      **user.public_metrics,
-    )
-    user.public_metrics = pm
+    tweet = self.__tweet
+    pm = tweet.public_metrics
+    if pm is None: return
+    pm = PublicMetrics(**pm)
+    tweet.public_metrics = pm
