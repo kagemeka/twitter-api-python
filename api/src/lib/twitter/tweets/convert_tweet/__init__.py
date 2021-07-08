@@ -35,6 +35,10 @@ from .geo import (
 from .withheld import (
   Withheld,
 )
+from .non_public_metrics \
+import (
+  NonPublicMetrics,
+)
 
 
 @dataclasses.dataclass
@@ -73,8 +77,8 @@ class Tweet():
     PublicMetrics
   ] = None
   non_public_metrics: Optional[
-    dict
-  ] = None # TODO
+    NonPublicMetrics
+  ] = None
   organic_metrics: Optional[
     dict
   ] = None # TODO 
@@ -119,6 +123,7 @@ class ConvertTweet():
     self.__created_at()
     self.__geo()
     self.__withheld()
+    self.__non_public_metrics()
   
 
   def __public_metrics(
@@ -204,3 +209,13 @@ class ConvertTweet():
     x = tw.withheld
     if x is None: return
     tw.withled = Withheld(**x)
+  
+
+  def __non_public_metrics(
+    self,
+  ) -> typing.NoReturn:
+    tw = self.__tweet
+    x = tw.non_public_metrics
+    if x is None: return 
+    x = NonPublicMetrics(**x)
+    tw.non_public_metrics = x
