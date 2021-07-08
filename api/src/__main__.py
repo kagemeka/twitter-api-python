@@ -3,82 +3,20 @@ from pprint import (
 )
 
 
-import requests
-
-from datetime import (
-  datetime,
-  timedelta,
-)
-
-
 from lib.adam import (
-  GetUserInfos,
-  GetTweets,
-  GetTweetCounts,
-)
-
-
-
-from lib.twitter.auth import (
-  GetAuthFrom,
-)
-
-from \
-  lib.twitter.tweets \
-  .tweet_counts \
-import (
-  MakeRequest,
-  Params,
-  ConvertTweetCount,
-)
-
-from lib.twitter import (
-  SendRequest,
+  MakeAdamDF,
+  Store,
 )
 
 
 
 
 def main():
-  get = GetUserInfos()
-  get = GetTweetCounts()
-  # get = GetTweets()
-  users = get()
-  print(users)
-
-  # get = GetAuthFrom()
-  # auth = get.secrets_manager(
-  #   'adam-twitter',
-  # )
-  # send = SendRequest(auth)
-
-  # params = Params(
-  #   query='twitter',
-  # )
-  # make = MakeRequest()
-  # request = make(params)
-  # res = send(request).json()
-  # convert = ConvertTweetCount()
-  # for data in res['data']:
-  #   data = convert(data)
-  #   print(data)
-    
-  # print(res)
+  df = MakeAdamDF()()
+  Store()(df)
+  print(df.tweet_cnts)
 
 
-  
-
-
- 
-
-
-  # s3 = boto3.resource('s3')
-  # bucket = s3.Bucket(
-  #   'av-adam-entrance',
-  # )
-  # print(
-  #   *bucket.objects.all()
-  # )
   
 
 
