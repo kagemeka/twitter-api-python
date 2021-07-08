@@ -13,6 +13,7 @@ from datetime import (
 
 from lib.adam import (
   GetUserInfos,
+  GetTweets,
 )
 
 
@@ -35,8 +36,10 @@ from lib.twitter.tweets import(
 )
 
 
+
 def main():
   get = GetUserInfos()
+  get = GetTweets()
   users = get()
   print(users)
   # get = GetAuthFrom()
