@@ -7,4 +7,5 @@ from .make_request import (
 from .convert_tweet_count \
 import (
   ConvertTweetCount,
+  TweetCount,
 )
