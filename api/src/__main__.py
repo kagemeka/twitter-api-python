@@ -101,11 +101,19 @@ from \
   lib.twitter.tweets \
   .search_tweets \
 import (
+  MakeRequest,
   Params,
 )
 
 
 def main():
+  get = GetAuthFrom()
+  auth = get.secrets_manager(
+    'adam-twitter',
+  )
+  send = SendRequest(auth)
+
+
   # make = MakeRequest()
   # params = ByUsernamesParams(
   #   usernames=['TwitterDev'],
@@ -115,11 +123,6 @@ def main():
   # request = make.by_usernames(
   #   params,
   # )
-  # get = GetAuthFrom()
-  # auth = get.secrets_manager(
-  #   'adam-twitter',
-  # )
-  # send = SendRequest(auth)
   # res = send(request).json()
   # convert = ConvertUser()
   # user = convert(
@@ -128,14 +131,22 @@ def main():
   # print(user)
 
   
-  params = Params(query='twitter')
-  # print(params)
-  dt = datetime.now() - timedelta(seconds=10)
-  params.end_time = dt
-  print(type(dt))
-  d = params.to_dict()
-  pprint(d)
-
+  params = Params(
+    query='twitter',
+  )
+  dt = datetime.now()
+  end = dt - timedelta(
+    seconds=10,
+  )
+  start = end - timedelta(
+    days=1,
+  )
+  params.end_time = end
+  params.start_time = start
+  make = MakeRequest()
+  request = make(params)
+  res = send(request).json()
+  print(res)
 
 
 
