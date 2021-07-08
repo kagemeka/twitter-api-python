@@ -10,6 +10,10 @@ from datetime import (
 from .public_metrics import (
   PublicMetrics,
 )
+from .entities import (
+  ConvertEntities,
+  Entities,
+)
 
 
 
@@ -33,7 +37,7 @@ class Tweet():
     datetime
   ] = None
   entities: Optional[
-    dict
+    Entities
   ] = None
   geo: Optional[
     dict
@@ -46,7 +50,7 @@ class Tweet():
     bool
   ] = None
   public_metrics: Optional[
-    dict
+    PublicMetrics
   ] = None
   non_public_metrics: Optional[
     dict
@@ -88,6 +92,7 @@ class ConvertTweet():
     )
     self.__tweet = tweet
     self.__public_metrics()
+    self.__entities()
   
 
   def __public_metrics(
@@ -98,3 +103,14 @@ class ConvertTweet():
     if pm is None: return
     pm = PublicMetrics(**pm)
     tweet.public_metrics = pm
+  
+
+  def __entities(
+    self,
+  ) -> typing.NoReturn:
+    tweet = self.__tweet
+    ent = tweet.entities
+    print(ent)
+    if ent is None: return
+    f = ConvertEntities()
+    tweet.entities = f(ent)

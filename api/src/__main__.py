@@ -156,18 +156,21 @@ def main():
   f.non_public_metrics = False
   f.organic_metrics = False
   f.promoted_metrics = False
-  pprint(params.to_dict())
+  # pprint(params.to_dict())
   make = MakeRequest()
   request = make(params)
   res = send(request).json()
   # pprint(res)
+  pprint(
+    res['data'][0],
+  )
   convert = ConvertTweet()
   tweet = convert(
     res['data'][0],
   )
   print(tweet)
 
-
+ 
   # get = GetUserInfos()
   # users = get()
   
