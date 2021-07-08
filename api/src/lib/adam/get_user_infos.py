@@ -4,7 +4,7 @@ from dataclasses import (
 )
 import pandas as pd
 from lib.twitter.auth import (
-  GetAuthOnAWS,
+  GetAuthFrom,
 )
 from lib.twitter import (
   RequestUsers,
@@ -13,7 +13,10 @@ from lib.twitter.users import (
   UserField,
   MakeParams,
 )
-from lib.twitter.users.expansions import Expansion
+from lib.twitter.users import (
+  Expansions,
+)
+
 from . import (
   FetchAnimeUsernames,
 )
@@ -35,7 +38,7 @@ class GetUserInfos():
   def __set_auth(
     self,
   ) -> typing.NoReturn:
-    get = GetAuthOnAWS() 
+    get = GetAuthFrom()
     auth = get.secrets_manager(
       'adam-twitter',
     )
