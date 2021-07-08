@@ -22,6 +22,9 @@ import (
 from .referenced_tweet import (
   ReferencedTweet,
 )
+from .attachments import (
+  Attachments,
+)
 
 
 @dataclasses.dataclass
@@ -29,7 +32,7 @@ class Tweet():
   id: str
   text: str
   attachments: Optional[
-    dict
+    Attachments
   ] = None
   author_id: Optional[
     str
@@ -104,6 +107,7 @@ class ConvertTweet():
     self.__entities()
     self.__context_annotations()
     self.__referenced_tweets()
+    self.__attachments()
   
 
   def __public_metrics(
@@ -150,4 +154,14 @@ class ConvertTweet():
       for x in ls
     ]
 
+  
+
+  def __attachments(
+    self,
+  ) -> typing.NoReturn:
+    tw = self.__tweet
+    x = tw.attachments
+    if x is None: return
+    x = Attachments(**x)
+    tw.attachments = x
     
