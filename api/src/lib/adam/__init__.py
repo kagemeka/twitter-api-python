@@ -5,3 +5,7 @@ from .get_user_infos import (
 from .get_tweets import (
   GetTweets,
 )
+
+from .get_tweet_counts import (
+  GetTweetCounts,
+)

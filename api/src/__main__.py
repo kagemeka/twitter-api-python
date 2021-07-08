@@ -14,6 +14,7 @@ from datetime import (
 from lib.adam import (
   GetUserInfos,
   GetTweets,
+  GetTweetCounts,
 )
 
 
@@ -39,29 +40,30 @@ from lib.twitter import (
 
 
 def main():
-  # get = GetUserInfos()
+  get = GetUserInfos()
+  get = GetTweetCounts()
   # get = GetTweets()
-  # users = get()
-  # print(users)
+  users = get()
+  print(users)
 
-  get = GetAuthFrom()
-  auth = get.secrets_manager(
-    'adam-twitter',
-  )
-  send = SendRequest(auth)
+  # get = GetAuthFrom()
+  # auth = get.secrets_manager(
+  #   'adam-twitter',
+  # )
+  # send = SendRequest(auth)
 
-  params = Params(
-    query='twitter',
-  )
-  make = MakeRequest()
-  request = make(params)
-  res = send(request).json()
-  convert = ConvertTweetCount()
-  for data in res['data']:
-    data = convert(data)
-    print(data)
+  # params = Params(
+  #   query='twitter',
+  # )
+  # make = MakeRequest()
+  # request = make(params)
+  # res = send(request).json()
+  # convert = ConvertTweetCount()
+  # for data in res['data']:
+  #   data = convert(data)
+  #   print(data)
     
-  print(res)
+  # print(res)
 
 
   

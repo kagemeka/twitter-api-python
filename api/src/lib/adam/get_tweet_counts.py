@@ -7,44 +7,43 @@ from dataclasses import (
   asdict,
 )
 import pandas as pd
-from tqdm import (
-  tqdm,
-)
 from datetime import (
   datetime,
   timedelta,
 )
+from tqdm import (
+  tqdm,
+)
 from .fetch_keywords import (
   FetchKeywords,
 )
-from \
-  lib.twitter.tweets \
-  .search_tweets \
-import (
-  Params,
-  MakeRequest,
-)
-from lib.twitter import (
-  SendRequest,
-)
-from lib.twitter.tweets \
-import (
-  ConvertTweet,
-  Tweet,
-)
 from lib.twitter.auth import (
   GetAuthFrom,
+)
+
+from \
+  lib.twitter.tweets \
+  .tweet_counts \
+import (
+  MakeRequest,
+  Params,
+  ConvertTweetCount,
+  TweetCount,
+)
+
+from lib.twitter import (
+  SendRequest,
 )
 
 
 @dataclasses.dataclass
 class Result():
   word: str
-  tweet: Tweet
+  tweet_count : TweetCount
   
 
 
-class GetTweets():
+class GetTweetCounts():
   def __call__(
     self,
   ) -> pd.DataFrame:
@@ -79,7 +78,9 @@ class GetTweets():
     auth = self.__auth
     send = SendRequest(auth)
     make = MakeRequest()
-    convert = ConvertTweet()
+    convert = (
+      ConvertTweetCount()
+    )
     dt = datetime.now()
     end = dt - timedelta(
       seconds=10,
@@ -93,13 +94,6 @@ class GetTweets():
       params = Params(query=w)
       params.start_time = start
       params.end_time = end
-      f = params.tweet_fields
-      f.created_at = True
-      f.author_id = True
-      f.public_metrics = True
-      f.referenced_tweets = (
-        True
-      )
       req = make(params)
       res = send(req).json()
       data = res.get(
@@ -119,21 +113,13 @@ class GetTweets():
   ) -> typing.NoReturn:
     tweets = self.__tweets
     ls = []
-    for res in tweets:
-      tw = res.tweet
+    for res in tweets: 
       w = res.word
-      pm = tw.public_metrics
       data = {
         'search_word': w,
-        'id': tw.id,
-        'text': tw.text,
-        'created_at': (
-          tw.created_at
+        **asdict(
+          res.tweet_count,
         ),
-        'author_id': (
-          tw.author_id
-        ),
-        **asdict(pm),
       }
       ls.append(data)
     self.__df = pd.DataFrame(
