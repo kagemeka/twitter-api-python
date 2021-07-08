@@ -19,6 +19,9 @@ import (
   ConvertContextAnnotation,
   ContextAnnotation,
 )
+from .referenced_tweet import (
+  ReferencedTweet,
+)
 
 
 @dataclasses.dataclass
@@ -100,6 +103,7 @@ class ConvertTweet():
     self.__public_metrics()
     self.__entities()
     self.__context_annotations()
+    self.__referenced_tweets()
   
 
   def __public_metrics(
@@ -125,18 +129,25 @@ class ConvertTweet():
   def __context_annotations(
     self,
   ) -> typing.NoReturn:
-    tweet = self.__tweet
-    ls = (
-      tweet
-      .context_annotations
-    )
+    tw = self.__tweet
+    ls = tw.context_annotations
     if ls is None: return
     f = ConvertContextAnnotation()
-    (
-      tweet
-      .context_annotations
-    ) = [
+    tw.context_annotations = [
       f(annot)
       for annot in ls
     ]
+
+
+  def __referenced_tweets(
+    self,
+  ) -> typing.NoReturn:
+    tw = self.__tweet
+    ls = tw.referenced_tweets
+    if ls is None: return
+    tw.referenced_tweets = [
+      ReferencedTweet(**x)
+      for x in ls
+    ]
+
     

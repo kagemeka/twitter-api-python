@@ -36,6 +36,9 @@ class Url():
   images: Optional[
     typing.List[Image]
   ] = None
+  description: Optional[
+    str
+  ] = None
 
 
 class ConvertUrl():
