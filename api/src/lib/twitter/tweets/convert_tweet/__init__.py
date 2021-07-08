@@ -32,6 +32,9 @@ from .geo import (
   ConvertGeo,
   Geo,
 )
+from .withheld import (
+  Withheld,
+)
 
 
 @dataclasses.dataclass
@@ -86,8 +89,8 @@ class Tweet():
   ] = None
   source: Optional[str] = None
   withheld: Optional[
-    dict
-  ] = None # TODO
+    Withheld
+  ] = None
 
 
 
@@ -115,6 +118,7 @@ class ConvertTweet():
     self.__attachments()
     self.__created_at()
     self.__geo()
+    self.__withheld()
   
 
   def __public_metrics(
@@ -191,3 +195,12 @@ class ConvertTweet():
     if x is None: return
     f = ConvertGeo()
     tw.geo = f(x)
+  
+
+  def __withheld(
+    self,
+  ) -> typing.NoReturn:
+    tw = self.__tweet
+    x = tw.withheld
+    if x is None: return
+    tw.withled = Withheld(**x)
