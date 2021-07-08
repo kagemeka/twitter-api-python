@@ -22,67 +22,50 @@ from lib.twitter.auth import (
   GetAuthFrom,
 )
 
-
 from \
   lib.twitter.tweets \
-  .search_tweets \
+  .tweet_counts \
 import (
   MakeRequest,
   Params,
+  ConvertTweetCount,
 )
 
-from lib.twitter.tweets import(
-  ConvertTweet,
+from lib.twitter import (
+  SendRequest,
 )
+
 
 
 
 def main():
-  get = GetUserInfos()
-  get = GetTweets()
-  users = get()
-  print(users)
-  # get = GetAuthFrom()
-  # auth = get.secrets_manager(
-  #   'adam-twitter',
-  # )
-  # send = SendRequest(auth)
+  # get = GetUserInfos()
+  # get = GetTweets()
+  # users = get()
+  # print(users)
+
+  get = GetAuthFrom()
+  auth = get.secrets_manager(
+    'adam-twitter',
+  )
+  send = SendRequest(auth)
+
+  params = Params(
+    query='twitter',
+  )
+  make = MakeRequest()
+  request = make(params)
+  res = send(request).json()
+  convert = ConvertTweetCount()
+  for data in res['data']:
+    data = convert(data)
+    print(data)
+    
+  print(res)
 
 
+  
 
-  # params = Params(
-  #   query='twitter',
-  # )
-  # dt = datetime.now()
-  # end = dt - timedelta(
-  #   seconds=10,
-  # )
-  # start = end - timedelta(
-  #   days=1,
-  # )
-  # params.end_time = end
-  # params.start_time = start
-  # enable = EnableAllParams()
-  # enable(params.tweet_fields)
-  # enable(params.expansions)
-  # enable(params.user_fields)
-  # f = params.tweet_fields
-  # f.non_public_metrics = False
-  # f.organic_metrics = False
-  # f.promoted_metrics = False
-  # # pprint(params.to_dict())
-  # make = MakeRequest()
-  # request = make(params)
-  # res = send(request).json()
-  # # pprint(res)
-  # pprint(
-  #   res['data'][0],
-  # )
-  # convert = ConvertTweet()
-  # tweet = convert(
-  #   res['data'][0],
-  # )
-  # print(tweet)
 
  
 
