@@ -6,7 +6,7 @@ from typing import (
 
 
 
-@dataclasses.dataclsas
+@dataclasses.dataclass
 class Id():
   self_: bool = False
   author_id: bool = False

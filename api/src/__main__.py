@@ -97,28 +97,45 @@ from lib.twitter.auth import (
 )
 
 
+from \
+  lib.twitter.tweets \
+  .search_tweets \
+import (
+  Params,
+)
+
 
 def main():
-  make = MakeRequest()
-  params = ByUsernamesParams(
-    usernames=['TwitterDev'],
-  )
-  f = params.user_fields
-  f.public_metrics = Truez
-  request = make.by_usernames(
-    params,
-  )
-  get = GetAuthFrom()
-  auth = get.secrets_manager(
-    'adam-twitter',
-  )
-  send = SendRequest(auth)
-  res = send(request).json()
-  convert = ConvertUser()
-  user = convert(
-    res['data'][0],
-  )
-  print(user)
+  # make = MakeRequest()
+  # params = ByUsernamesParams(
+  #   usernames=['TwitterDev'],
+  # )
+  # f = params.user_fields
+  # f.public_metrics = Truez
+  # request = make.by_usernames(
+  #   params,
+  # )
+  # get = GetAuthFrom()
+  # auth = get.secrets_manager(
+  #   'adam-twitter',
+  # )
+  # send = SendRequest(auth)
+  # res = send(request).json()
+  # convert = ConvertUser()
+  # user = convert(
+  #   res['data'][0],
+  # )
+  # print(user)
+
+  
+  params = Params(query='twitter')
+  # print(params)
+  dt = datetime.now() - timedelta(seconds=10)
+  params.end_time = dt
+  print(type(dt))
+  d = params.to_dict()
+  pprint(d)
+
 
 
 
