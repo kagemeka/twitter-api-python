@@ -4,7 +4,7 @@ from datetime import (
 
 class DatetimeFromStr():
   @staticmethod
-  def utc_format(
+  def rfc3339_format(
     s: str,
   ) -> datetime:
     f = '%Y-%m-%dT%H:%M:%S.%fZ'

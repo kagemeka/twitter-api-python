@@ -96,8 +96,8 @@ class ConvertUser():
     user = self.__user
     dt = user.created_at
     if not dt: return
-    dt_from = DatetimeFromStr()
-    dt = dt_from.utc_format(dt)
+    f = DatetimeFromStr()
+    dt = f.rfc3339_format(dt)
     user.created_at = dt
   
 
