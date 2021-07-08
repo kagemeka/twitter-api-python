@@ -1,3 +1,6 @@
+import typing
+
+
 from .get_user_infos import (
   GetUserInfos,
 )
@@ -19,4 +22,11 @@ from .store import (
 )
 
 
-# class Adam()
+
+class Adam():
+  def __call__(
+    self,
+  ) -> typing.NoReturn:
+    df = MakeAdamDF()()
+    Store()(df)
+

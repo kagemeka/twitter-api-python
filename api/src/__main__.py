@@ -1,23 +1,11 @@
-from pprint import (
-  pprint,
-)
-
-
 from lib.adam import (
-  MakeAdamDF,
-  Store,
+  Adam,
 )
-
 
 
 
 def main():
-  df = MakeAdamDF()()
-  Store()(df)
-  print(df.tweet_cnts)
-
-
-  
+  Adam()()  
 
 
 def lambda_handler(
