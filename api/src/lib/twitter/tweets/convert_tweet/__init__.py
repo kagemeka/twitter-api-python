@@ -42,6 +42,9 @@ import (
 from .organic_metrics import (
   OrganicMetrics,
 )
+from .promoted_metrics import (
+  PromotedMetrics,
+)
 
 
 
@@ -87,8 +90,8 @@ class Tweet():
     OrganicMetrics
   ] = None
   promoted_metrics: Optional[
-    dict
-  ] = None # TODO 
+    PromotedMetrics
+  ] = None
   referenced_tweets: Optional[
     List[ReferencedTweet]
   ] = None
@@ -129,6 +132,7 @@ class ConvertTweet():
     self.__withheld()
     self.__non_public_metrics()
     self.__organic_metrics()
+    self.__promoted_metrics()
   
 
   def __public_metrics(
@@ -234,3 +238,13 @@ class ConvertTweet():
     if x is None: return 
     x = OrganicMetrics(**x)
     tw.organic_metrics = x
+  
+
+  def __promoted_metrics(
+    self,
+  ) -> typing.NoReturn:
+    tw = self.__tweet
+    x = tw.promoted_metrics
+    if x is None: return
+    x = PromotedMetrics(**x)
+    tw.promoted_metrics = x
