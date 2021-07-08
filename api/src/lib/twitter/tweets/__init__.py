@@ -3,6 +3,7 @@ from .expansions import (
 )
 from .convert_tweet import (
   ConvertTweet,
+  Tweet,
 )
 
 
