@@ -3,9 +3,9 @@ from .expansions import (
 )
 
 
-from .tweet import (
-  Tweet,
-)
 
+from .convert_tweet import (
+  ConvertTweet,
+)
 
 
