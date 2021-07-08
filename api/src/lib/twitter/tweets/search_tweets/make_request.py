@@ -1,0 +1,21 @@
+import typing
+from lib.twitter import (
+  Request,
+)
+from . import (
+  Params,
+)
+
+
+
+class MakeRequest():
+  ...
+
+  def __call__(
+    self,
+    params: Params,
+  ) -> Request:
+    api_path = (
+      '/2/tweets/search/recent'
+    )
+    
