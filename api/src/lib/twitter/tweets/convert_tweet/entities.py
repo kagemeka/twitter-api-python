@@ -7,6 +7,13 @@ from typing import (
 
 
 @dataclasses.dataclass
+class Image():
+  height: int
+  width: int
+  url: str
+
+
+@dataclasses.dataclass
 class Url():
   start: int
   end: int
@@ -20,6 +27,46 @@ class Url():
   unwound_url: Optional[
     str
   ] = None
+  status: Optional[
+    int
+  ] = None
+  title: Optional[
+    str
+  ] = None
+  images: Optional[
+    typing.List[Image]
+  ] = None
+
+
+class ConvertUrl():
+  def __call__(
+    self,
+    data: dict,
+  ) -> Url:
+    self.__data = data
+    self.__convert()
+    return self.__url
+  
+
+  def __convert(
+    self,
+  ) -> typing.NoReturn:
+    self.__url = Url(
+      **self.__data,
+    )
+    self.__images()
+  
+
+  def __images(
+    self,
+  ) -> typing.NoReturn:
+    url = self.__url
+    ls = url.images
+    if ls is None: return
+    url.images = [
+      Image(**image)
+      for image in ls
+    ]
 
 
 
@@ -120,8 +167,9 @@ class ConvertEntities():
     entities = self.__entities
     urls = entities.urls
     if urls is None: return
+    f = ConvertUrl()
     entities.urls = [
-      Url(**url)
+      f(url)
       for url in urls
     ]
   

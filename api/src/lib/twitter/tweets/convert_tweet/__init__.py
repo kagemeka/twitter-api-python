@@ -14,7 +14,11 @@ from .entities import (
   ConvertEntities,
   Entities,
 )
-
+from .context_annotation \
+import (
+  ConvertContextAnnotation,
+  ContextAnnotation,
+)
 
 
 @dataclasses.dataclass
@@ -28,7 +32,9 @@ class Tweet():
     str
   ] = None
   context_annotations: (
-    Optional[List[dict]]
+    Optional[List[
+      ContextAnnotation
+    ]]
   ) = None
   conversation_id: Optional[
     str
@@ -93,6 +99,7 @@ class ConvertTweet():
     self.__tweet = tweet
     self.__public_metrics()
     self.__entities()
+    self.__context_annotations()
   
 
   def __public_metrics(
@@ -110,7 +117,26 @@ class ConvertTweet():
   ) -> typing.NoReturn:
     tweet = self.__tweet
     ent = tweet.entities
-    print(ent)
     if ent is None: return
     f = ConvertEntities()
     tweet.entities = f(ent)
+  
+
+  def __context_annotations(
+    self,
+  ) -> typing.NoReturn:
+    tweet = self.__tweet
+    ls = (
+      tweet
+      .context_annotations
+    )
+    if ls is None: return
+    f = ConvertContextAnnotation()
+    (
+      tweet
+      .context_annotations
+    ) = [
+      f(annot)
+      for annot in ls
+    ]
+    
