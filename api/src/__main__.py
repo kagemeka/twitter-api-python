@@ -90,6 +90,7 @@ from lib.twitter.users import (
 
 from lib.twitter import (
   SendRequest,
+  EnableAllParams,
 )
 
 from lib.twitter.auth import (
@@ -130,7 +131,7 @@ def main():
   # )
   # print(user)
 
-  
+
   params = Params(
     query='twitter',
   )
@@ -143,10 +144,19 @@ def main():
   )
   params.end_time = end
   params.start_time = start
+  enable = EnableAllParams()
+  enable(params.tweet_fields)
+  enable(params.expansions)
+  enable(params.user_fields)
+  f = params.tweet_fields
+  f.non_public_metrics = False
+  f.organic_metrics = False
+  f.promoted_metrics = False
+  pprint(params.to_dict())
   make = MakeRequest()
   request = make(params)
   res = send(request).json()
-  print(res)
+  pprint(res)
 
 
 
