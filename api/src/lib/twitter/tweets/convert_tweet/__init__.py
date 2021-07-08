@@ -39,6 +39,10 @@ from .non_public_metrics \
 import (
   NonPublicMetrics,
 )
+from .organic_metrics import (
+  OrganicMetrics,
+)
+
 
 
 @dataclasses.dataclass
@@ -80,8 +84,8 @@ class Tweet():
     NonPublicMetrics
   ] = None
   organic_metrics: Optional[
-    dict
-  ] = None # TODO 
+    OrganicMetrics
+  ] = None
   promoted_metrics: Optional[
     dict
   ] = None # TODO 
@@ -124,6 +128,7 @@ class ConvertTweet():
     self.__geo()
     self.__withheld()
     self.__non_public_metrics()
+    self.__organic_metrics()
   
 
   def __public_metrics(
@@ -219,3 +224,13 @@ class ConvertTweet():
     if x is None: return 
     x = NonPublicMetrics(**x)
     tw.non_public_metrics = x
+
+  
+  def __organic_metrics(
+    self,
+  ) -> typing.NoReturn:
+    tw = self.__tweet
+    x = tw.organic_metrics
+    if x is None: return 
+    x = OrganicMetrics(**x)
+    tw.organic_metrics = x
