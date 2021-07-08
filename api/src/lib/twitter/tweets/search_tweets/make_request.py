@@ -9,8 +9,6 @@ from . import (
 
 
 class MakeRequest():
-  ...
-
   def __call__(
     self,
     params: Params,
@@ -18,4 +16,7 @@ class MakeRequest():
     api_path = (
       '/2/tweets/search/recent'
     )
-    
+    return Request(
+      api_path,
+      params.to_dict(),
+    )
