@@ -28,6 +28,10 @@ from .referenced_tweet import (
 from .attachments import (
   Attachments,
 )
+from .geo import (
+  ConvertGeo,
+  Geo,
+)
 
 
 @dataclasses.dataclass
@@ -50,13 +54,11 @@ class Tweet():
   ] = None
   created_at: Optional[
     datetime
-  ] = None #TODO
+  ] = None
   entities: Optional[
     Entities
   ] = None
-  geo: Optional[
-    dict
-  ] = None # TODO
+  geo: Optional[Geo] = None 
   in_reply_to_user_id: (
     Optional[str]
   ) = None
@@ -112,6 +114,7 @@ class ConvertTweet():
     self.__referenced_tweets()
     self.__attachments()
     self.__created_at()
+    self.__geo()
   
 
   def __public_metrics(
@@ -178,3 +181,13 @@ class ConvertTweet():
     f = DatetimeFromStr()
     x = f.rfc3339_format(x)
     tw.created_at = x
+  
+
+  def __geo(
+    self,
+  ) -> typing.NoReturn:
+    tw = self.__tweet
+    x = tw.geo
+    if x is None: return
+    f = ConvertGeo()
+    tw.geo = f(x)
