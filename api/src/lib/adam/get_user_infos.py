@@ -3,24 +3,25 @@ from dataclasses import (
   asdict,
 )
 import pandas as pd
+from .fetch_usernames import (
+  FetchUsernames,
+)
+from \
+  lib.twitter.users \
+  .user_lookup \
+import (
+  ByUsernamesParams,
+  MakeRequest,
+)
+from lib.twitter import (
+  SendRequest,
+)
+from lib.twitter.users import (
+  ConvertUser,
+)
 from lib.twitter.auth import (
   GetAuthFrom,
 )
-from lib.twitter import (
-  RequestUsers,
-)
-from lib.twitter.users import (
-  UserField,
-  MakeParams,
-)
-from lib.twitter.users import (
-  Expansions,
-)
-
-from . import (
-  FetchAnimeUsernames,
-)
-
 
 
 
@@ -49,7 +50,7 @@ class GetUserInfos():
     self,
   ) -> typing.NoReturn:
     self.__usernames = (
-      FetchAnimeUsernames()()
+      FetchUsernames()()
     )
 
   
@@ -57,19 +58,23 @@ class GetUserInfos():
     self,
   ) -> typing.NoReturn:
     auth = self.__auth
-    f = RequestUsers(auth)
-    user_fields = [
-      UserField.PUBLIC_METRICS,
-    ]
-    params = MakeParams()(
-      user_fields=user_fields,
-    )
-    names = self.__usernames
-    users = f.by_usernames(
+    send = SendRequest(auth)
+    make = MakeRequest()
+    names = self.__usernames 
+    params = ByUsernamesParams(
       usernames=names,
-      params=params,
     )
-    self.__users = users
+    f = params.user_fields
+    f.public_metrics = True
+    req = make.by_usernames(
+      params,
+    )
+    res = send(req).json()
+    convert = ConvertUser()
+    self.__users = [
+      convert(user)
+      for user in res['data']
+    ]
 
   
   def __to_dataframe(
@@ -82,7 +87,9 @@ class GetUserInfos():
       data = {
         'id': user.id,
         'name': user.name,
-        'username': user.username,
+        'username': (
+          user.username
+        ),
         **asdict(pm),
       }
       ls.append(data)
