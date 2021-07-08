@@ -7,6 +7,9 @@ from typing import (
 from datetime import (
   datetime,
 )
+from lib import (
+  DatetimeFromStr,
+)
 from .public_metrics import (
   PublicMetrics,
 )
@@ -47,13 +50,13 @@ class Tweet():
   ] = None
   created_at: Optional[
     datetime
-  ] = None
+  ] = None #TODO
   entities: Optional[
     Entities
   ] = None
   geo: Optional[
     dict
-  ] = None
+  ] = None # TODO
   in_reply_to_user_id: (
     Optional[str]
   ) = None
@@ -66,15 +69,15 @@ class Tweet():
   ] = None
   non_public_metrics: Optional[
     dict
-  ] = None
+  ] = None # TODO
   organic_metrics: Optional[
     dict
-  ] = None 
+  ] = None # TODO 
   promoted_metrics: Optional[
     dict
-  ] = None
+  ] = None # TODO 
   referenced_tweets: Optional[
-    List[str]
+    List[ReferencedTweet]
   ] = None
   reply_settings: Optional[
     str
@@ -82,7 +85,7 @@ class Tweet():
   source: Optional[str] = None
   withheld: Optional[
     dict
-  ] = None
+  ] = None # TODO
 
 
 
@@ -108,6 +111,7 @@ class ConvertTweet():
     self.__context_annotations()
     self.__referenced_tweets()
     self.__attachments()
+    self.__created_at()
   
 
   def __public_metrics(
@@ -153,7 +157,6 @@ class ConvertTweet():
       ReferencedTweet(**x)
       for x in ls
     ]
-
   
 
   def __attachments(
@@ -164,4 +167,14 @@ class ConvertTweet():
     if x is None: return
     x = Attachments(**x)
     tw.attachments = x
-    
+  
+
+  def __created_at(
+    self,
+  ) -> typing.NoReturn:
+    tw = self.__tweet
+    x = tw.created_at
+    if x is None: return
+    f = DatetimeFromStr()
+    x = f.rfc3339_format(x)
+    tw.created_at = x
