@@ -10,6 +10,10 @@ import pandas as pd
 from .fetch_keywords import (
   FetchKeywords,
 )
+from datetime import (
+  datetime,
+  timedelta,
+)
 from \
   lib.twitter.tweets \
   .search_tweets \
@@ -73,10 +77,19 @@ class GetTweets():
     send = SendRequest(auth)
     make = MakeRequest()
     convert = ConvertTweet()
+    dt = datetime.now()
+    end = dt - timedelta(
+      seconds=10,
+    )
+    start = end - timedelta(
+      days=1,
+    )
     ls: List[Result] = []
     words = self.__keywords 
     for w in words:
       params = Params(query=w)
+      params.start_time = start
+      params.end_time = end
       f = params.tweet_fields
       f.created_at = True
       f.author_id = True
