@@ -1,25 +1,28 @@
+import boto3 
 import typing
-import boto3
 import pandas as pd
 
 
 
-class FetchComicKeywords():
+class FetchUsernames():
+  
   def __call__(
     self,
   ) -> typing.List[str]:
     self.__donwload_csv()
     self.__read_csv()
-    self.__get_keywords()
-    return self.__keywords
-  
+    self.__get_usernames()
+    return self.__usernames
 
-  def __get_keywords(
+
+  def __get_usernames(
     self,
   ) -> typing.NoReturn:
     df = self.__df
-    words = df.keyword.values
-    self.__keywords = words
+    names = df.twitter_username
+    names.dropna(inplace=True)
+    names = names.values
+    self.__usernames = names
     
 
   def __read_csv(
@@ -38,7 +41,7 @@ class FetchComicKeywords():
       'av-adam-entrance',
     )
     ls = bucket.objects.filter(
-      Prefix='natalie/',
+      Prefix='akibasouken/',
     )
     ls = [o.key for o in ls]
     ls.sort()
@@ -51,5 +54,3 @@ class FetchComicKeywords():
     ).download_file(
       self.__save_path,
     )
-
-
