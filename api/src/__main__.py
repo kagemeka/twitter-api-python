@@ -7,9 +7,8 @@ from lib.twitter.tweets import(
   ConvertTweet,
 )
 
-from lib.twitter.tweets.timelines import (
-  TweetsParams,
-  MentionsParams,
+from lib.twitter.tweets.sampled_stream import (
+  Params,
   MakeRequest,
 )
 
@@ -27,10 +26,9 @@ def main():
   auth = get.secrets_manager(
     'adam-twitter',
   )
-  params = TweetsParams()
+  params = Params()
   make = MakeRequest()
-  request = make.tweets(
-    id_=2244994945,
+  request = make(
     params=params,
   )
   send = SendRequest(auth)
