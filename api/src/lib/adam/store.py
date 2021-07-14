@@ -42,6 +42,7 @@ class Store():
       'datetimee'
     ] = dt
     df.users['datetime'] = dt
+    self.__df = df
   
 
   def __save(

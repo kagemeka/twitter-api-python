@@ -29,4 +29,3 @@ class Adam():
   ) -> typing.NoReturn:
     df = MakeAdamDF()()
     Store()(df)
-

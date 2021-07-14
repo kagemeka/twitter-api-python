@@ -18,21 +18,21 @@ from .fetch_keywords import (
   FetchKeywords,
 )
 from \
-  lib.twitter.tweets \
+  kgmk.twitter.tweets \
   .search_tweets \
 import (
   Params,
   MakeRequest,
 )
-from lib.twitter import (
+from kgmk.twitter import (
   SendRequest,
 )
-from lib.twitter.tweets \
+from kgmk.twitter.tweets \
 import (
   ConvertTweet,
   Tweet,
 )
-from lib.twitter.auth import (
+from kgmk.twitter.auth import (
   GetAuthFrom,
 )
 
