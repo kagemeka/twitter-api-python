@@ -7,19 +7,19 @@ from .fetch_usernames import (
   FetchUsernames,
 )
 from \
-  lib.twitter.users \
+  kgmk.twitter.users \
   .user_lookup \
 import (
   ByUsernamesParams,
   MakeRequest,
 )
-from lib.twitter import (
+from kgmk.twitter import (
   SendRequest,
 )
-from lib.twitter.users import (
+from kgmk.twitter.users import (
   ConvertUser,
 )
-from lib.twitter.auth import (
+from kgmk.twitter.auth import (
   GetAuthFrom,
 )
 

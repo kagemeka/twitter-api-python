@@ -17,12 +17,12 @@ from tqdm import (
 from .fetch_keywords import (
   FetchKeywords,
 )
-from lib.twitter.auth import (
+from kgmk.twitter.auth import (
   GetAuthFrom,
 )
 
 from \
-  lib.twitter.tweets \
+  kgmk.twitter.tweets \
   .tweet_counts \
 import (
   MakeRequest,
@@ -31,7 +31,7 @@ import (
   TweetCount,
 )
 
-from lib.twitter import (
+from kgmk.twitter import (
   SendRequest,
 )
 
