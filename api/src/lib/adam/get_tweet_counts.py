@@ -4,7 +4,7 @@ import pandas as pd
 import datetime 
 import tqdm 
 from ._fetch_keywords import _fetch_keywords
-from lib.twitter.auth import GetTwitterAuth
+from lib.twitter.auth import TwitterAuth, GetTwitterAuth
 from lib.twitter.tweets.tweet_counts import (
   MakeRequest,
   Params,
@@ -35,8 +35,7 @@ def get_tweet_counts() -> typing.NoReturn:
   for word in tqdm.tqdm(_fetch_keywords()):
     params = Params(query=word)
     params.start_time, params.end_time = start, end 
-    req = MakeRequest()(params)
-    res = send(req).json()
+    res = send(MakeRequest()(params)).json()
     data = res.get('data', None)
     if data is None: continue
     for tw in data:
