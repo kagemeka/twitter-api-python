@@ -1,4 +1,4 @@
-from kgmk.twitter import Request
+from lib.twitter import Request
 from . import (
   ByUsernameParams,
   ByIdParams,

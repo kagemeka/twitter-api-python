@@ -1,10 +1,6 @@
 import typing
-from kgmk.twitter import (
-  Request,
-)
-from . import (
-  Params,
-)
+from lib.twitter import Request
+from . import Params
 
 
 
