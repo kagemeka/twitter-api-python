@@ -1,98 +1,68 @@
 import typing
-from dataclasses import (
-  asdict,
-)
+import dataclasses
 import pandas as pd
-from .fetch_usernames import (
-  FetchUsernames,
-)
-from \
-  kgmk.twitter.users \
-  .user_lookup \
-import (
+from lib.twitter.users.user_lookup import (
   ByUsernamesParams,
   MakeRequest,
 )
-from kgmk.twitter import (
-  SendRequest,
-)
-from kgmk.twitter.users import (
-  ConvertUser,
-)
-from kgmk.twitter.auth import (
-  GetAuthFrom,
-)
+import datetime 
+from lib.twitter import SendRequest
+from lib.twitter.users import ConvertUser
+from lib.twitter.auth import GetTwitterAuth
+from lib.aws_util.s3.download import download_from_s3
+from lib.aws_util.s3.upload import upload_to_s3
 
 
 
-class GetUserInfos():
-  def __call__(
-    self,
-  ) -> pd.DataFrame:
-    self.__get_usernames()
-    self.__set_auth()
-    self.__request()
-    self.__to_dataframe()
-    return self.__df
-  
+def _fetch_usernames() -> typing.NoReturn:
+  bucket = 'av-adam-store'
+  save_path = '/tmp/meta.csv'
+  obj = 'akibasouken/meta.csv'
+  download_from_s3(bucket, obj, save_path)
+  df = pd.read_csv(save_path)
+  return df.twitter_username.dropna().values
 
-  def __set_auth(
-    self,
-  ) -> typing.NoReturn:
-    get = GetAuthFrom()
-    auth = get.secrets_manager(
-      'adam-twitter',
-    )
-    self.__auth = auth
-  
-  
-  def __get_usernames(
-    self,
-  ) -> typing.NoReturn:
-    self.__usernames = (
-      FetchUsernames()()
-    )
 
-  
-  def __request(
-    self,
-  ) -> typing.NoReturn:
-    auth = self.__auth
-    send = SendRequest(auth)
-    make = MakeRequest()
-    names = self.__usernames 
-    params = ByUsernamesParams(
-      usernames=names,
-    )
-    f = params.user_fields
-    f.public_metrics = True
-    req = make.by_usernames(
-      params,
-    )
-    res = send(req).json()
-    convert = ConvertUser()
-    self.__users = [
-      convert(user)
-      for user in res['data']
-    ]
 
-  
-  def __to_dataframe(
-    self,
-  ) -> typing.NoReturn:
-    users = self.__users
-    ls = []
-    for user in users:
-      pm = user.public_metrics
-      data = {
-        'id': user.id,
-        'name': user.name,
-        'username': (
-          user.username
-        ),
-        **asdict(pm),
-      }
-      ls.append(data)
-    self.__df = pd.DataFrame(
-      ls,
-    )
+def get_user_infos() -> typing.NoReturn:
+  SECRET_NAME = 'adam-twitter'
+  auth = GetTwitterAuth.from_secrets_manager(SECRET_NAME)
+  params = ByUsernamesParams(usernames=_fetch_usernames())
+  params.user_fields.public_metrics = True
+  send = SendRequest(auth)
+  res = send(MakeRequest.by_usernames(params)).json()
+  convert = ConvertUser()
+  print(res)
+  users = [convert(user) for user in res['data']]
+  ls = []
+  for user in users:
+    data = {
+      'id': user.id,
+      'name': user.name,
+      'username': user.username,
+      **dataclasses.asdict(user.public_metrics),
+    }
+    ls.append(data)
+  df = pd.DataFrame(ls)
+  __store(df)
+
+
+def __store(df: pd.DataFrame) -> typing.NoReturn:
+  bucket = 'av-adam-store'
+  save_path = '/tmp/users.csv'
+  obj = 'twitter/users.csv'
+  date = str(datetime.datetime.now().date())
+  df['updated_at'] = date
+  download_from_s3(bucket, obj, save_path)
+  old_df = pd.read_csv(save_path)
+  df = pd.concat((old_df, df), ignore_index=True)
+  df['id'] = df.id.astype(str)
+  df.drop_duplicates(
+    subset=['id', 'updated_at'],
+    keep='last',
+    inplace=True,
+  )
+  print(df)
+  df.to_csv(save_path, index=False)
+  upload_to_s3(bucket, obj, save_path)
+

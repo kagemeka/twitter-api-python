@@ -1,39 +1,20 @@
 import typing
-from typing import (
-  List,
-)
 import dataclasses
-from dataclasses import (
-  asdict,
-)
 import pandas as pd
-from datetime import (
-  datetime,
-  timedelta,
-)
-from tqdm import (
-  tqdm,
-)
-from .fetch_keywords import (
-  FetchKeywords,
-)
-from kgmk.twitter.auth import (
-  GetAuthFrom,
-)
-
-from \
-  kgmk.twitter.tweets \
-  .tweet_counts \
-import (
+import datetime 
+import tqdm 
+from ._fetch_keywords import _fetch_keywords
+from lib.twitter.auth import GetTwitterAuth
+from lib.twitter.tweets.tweet_counts import (
   MakeRequest,
   Params,
   ConvertTweetCount,
   TweetCount,
 )
+from lib.twitter import SendRequest
+from lib.aws_util.s3.download import download_from_s3
+from lib.aws_util.s3.upload import upload_to_s3
 
-from kgmk.twitter import (
-  SendRequest,
-)
 
 
 @dataclasses.dataclass
@@ -43,85 +24,49 @@ class Result():
   
 
 
-class GetTweetCounts():
-  def __call__(
-    self,
-  ) -> pd.DataFrame:
-    self.__get_keywords()
-    self.__set_auth()
-    self.__request()
-    self.__to_dataframe()
-    return self.__df
-  
+def get_tweet_counts() -> typing.NoReturn:
+  SECRET_NAME = 'adam-twitter'
+  auth = GetTwitterAuth.from_secrets_manager(SECRET_NAME)
+  send = SendRequest(auth)
+  dt = datetime.datetime.now()
+  end = dt - datetime.timedelta(seconds=10)
+  start = end - datetime.timedelta(days=1)
+  results: typing.List[Result] = []
+  for word in tqdm.tqdm(_fetch_keywords()):
+    params = Params(query=word)
+    params.start_time, params.end_time = start, end 
+    req = MakeRequest()(params)
+    res = send(req).json()
+    data = res.get('data', None)
+    if data is None: continue
+    for tw in data:
+      results.append(Result(word, ConvertTweetCount()(tw)))
+  ls = [
+    {
+      'search_word': res.word,
+      **dataclasses.asdict(res.tweet_count),
+    }
+    for res in results 
+  ]
+  df = pd.DataFrame(ls)
+  __store(df)
 
-  def __set_auth(
-    self,
-  ) -> typing.NoReturn:
-    get = GetAuthFrom()
-    auth = get.secrets_manager(
-      'adam-twitter',
-    )
-    self.__auth = auth
-  
-  
-  def __get_keywords(
-    self,
-  ) -> typing.NoReturn:
-    self.__keywords = (
-      FetchKeywords()()
-    )
 
-  
-  def __request(
-    self,
-  ) -> typing.NoReturn:
-    auth = self.__auth
-    send = SendRequest(auth)
-    make = MakeRequest()
-    convert = (
-      ConvertTweetCount()
-    )
-    dt = datetime.now()
-    end = dt - timedelta(
-      seconds=10,
-    )
-    start = end - timedelta(
-      days=1,
-    )
-    ls: List[Result] = []
-    words = self.__keywords 
-    for w in tqdm(words):
-      params = Params(query=w)
-      params.start_time = start
-      params.end_time = end
-      req = make(params)
-      res = send(req).json()
-      data = res.get(
-        'data',
-        None,
-      )
-      if data is None: continue
-      for tw in data:
-        ls.append(Result(
-          w, convert(tw),
-        ))
-    self.__tweets = ls
 
-  
-  def __to_dataframe(
-    self,
-  ) -> typing.NoReturn:
-    tweets = self.__tweets
-    ls = []
-    for res in tweets: 
-      w = res.word
-      data = {
-        'search_word': w,
-        **asdict(
-          res.tweet_count,
-        ),
-      }
-      ls.append(data)
-    self.__df = pd.DataFrame(
-      ls,
-    )
+def __store(df: pd.DataFrame) -> typing.NoReturn:
+  bucket = 'av-adam-store'
+  save_path = '/tmp/tweet_counts.csv'
+  obj = 'twitter/tweet_counts.csv'
+  date = str(datetime.datetime.now().date())
+  df['updated_at'] = date
+  download_from_s3(bucket, obj, save_path)
+  old_df = pd.read_csv(save_path)
+  df = pd.concat((old_df, df), ignore_index=True)
+  df[['start', 'end']] = df[['start', 'end']].astype(str)
+  df.drop_duplicates(
+    subset=['search_word', 'start', 'end'], 
+    inplace=True,
+  )
+  print(df)
+  df.to_csv(save_path, index=False)
+  upload_to_s3(bucket, obj, save_path)

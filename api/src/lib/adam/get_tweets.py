@@ -1,40 +1,19 @@
 import typing
-from typing import (
-  List,
-)
 import dataclasses
-from dataclasses import (
-  asdict,
-)
 import pandas as pd
-from tqdm import (
-  tqdm,
-)
-from datetime import (
-  datetime,
-  timedelta,
-)
-from .fetch_keywords import (
-  FetchKeywords,
-)
-from \
-  kgmk.twitter.tweets \
-  .search_tweets \
-import (
+import tqdm
+import datetime 
+from ._fetch_keywords import _fetch_keywords
+from lib.twitter.tweets.search_tweets import (
   Params,
   MakeRequest,
 )
-from kgmk.twitter import (
-  SendRequest,
-)
-from kgmk.twitter.tweets \
-import (
-  ConvertTweet,
-  Tweet,
-)
-from kgmk.twitter.auth import (
-  GetAuthFrom,
-)
+from lib.twitter import SendRequest
+from lib.twitter.tweets import Tweet, ConvertTweet
+from lib.twitter.auth import GetTwitterAuth
+from lib.aws_util.s3.download import download_from_s3
+from lib.aws_util.s3.upload import upload_to_s3
+
 
 
 @dataclasses.dataclass
@@ -44,98 +23,55 @@ class Result():
   
 
 
-class GetTweets():
-  def __call__(
-    self,
-  ) -> pd.DataFrame:
-    self.__get_keywords()
-    self.__set_auth()
-    self.__request()
-    self.__to_dataframe()
-    return self.__df
-  
+def get_tweets() -> typing.NoReturn:
+  SECRET_NAME = 'adam-twitter'
+  auth = GetTwitterAuth.from_secrets_manager(SECRET_NAME)
+  send = SendRequest(auth)
+  dt = datetime.datetime.now()
+  end = dt - datetime.timedelta(seconds=10)
+  start = end - datetime.timedelta(days=1)
+  results: typing.List[Result] = []
+  for word in tqdm.tqdm(_fetch_keywords()):
+    params = Params(query=word)
+    params.start_time = start
+    params.end_time = end
+    f = params.tweet_fields
+    f.created_at = True
+    f.author_id = True
+    f.public_metrics = True
+    f.referenced_tweets = True
+    req = MakeRequest()(params)
+    res = send(req).json()
+    data = res.get('data', None)
+    if data is None: continue
+    for tw in data:
+      results.append(Result(word, ConvertTweet()(tw)))
+  ls = [
+    {
+      'search_word': res.word,
+      'id': res.tweet.id,
+      'text': res.tweet.text,
+      'created_at': res.tweet.created_at,
+      'author_id': res.tweet.author_id,
+      **dataclasses.asdict(res.tweet.public_metrics),
+    }
+    for res in results 
+  ]
+  df = pd.DataFrame(ls)
+  __store(df)
 
-  def __set_auth(
-    self,
-  ) -> typing.NoReturn:
-    get = GetAuthFrom()
-    auth = get.secrets_manager(
-      'adam-twitter',
-    )
-    self.__auth = auth
-  
-  
-  def __get_keywords(
-    self,
-  ) -> typing.NoReturn:
-    self.__keywords = (
-      FetchKeywords()()
-    )
 
-  
-  def __request(
-    self,
-  ) -> typing.NoReturn:
-    auth = self.__auth
-    send = SendRequest(auth)
-    make = MakeRequest()
-    convert = ConvertTweet()
-    dt = datetime.now()
-    end = dt - timedelta(
-      seconds=10,
-    )
-    start = end - timedelta(
-      days=1,
-    )
-    ls: List[Result] = []
-    words = self.__keywords 
-    for w in tqdm(words):
-      params = Params(query=w)
-      params.start_time = start
-      params.end_time = end
-      f = params.tweet_fields
-      f.created_at = True
-      f.author_id = True
-      f.public_metrics = True
-      f.referenced_tweets = (
-        True
-      )
-      req = make(params)
-      res = send(req).json()
-      data = res.get(
-        'data',
-        None,
-      )
-      if data is None: continue
-      for tw in data:
-        ls.append(Result(
-          w, convert(tw),
-        ))
-    self.__tweets = ls
-
-  
-  def __to_dataframe(
-    self,
-  ) -> typing.NoReturn:
-    tweets = self.__tweets
-    ls = []
-    for res in tweets:
-      tw = res.tweet
-      w = res.word
-      pm = tw.public_metrics
-      data = {
-        'search_word': w,
-        'id': tw.id,
-        'text': tw.text,
-        'created_at': (
-          tw.created_at
-        ),
-        'author_id': (
-          tw.author_id
-        ),
-        **asdict(pm),
-      }
-      ls.append(data)
-    self.__df = pd.DataFrame(
-      ls,
-    )
+def __store(df: pd.DataFrame) -> typing.NoReturn:
+  bucket = 'av-adam-store'
+  save_path = '/tmp/tweets.csv'
+  obj = 'twitter/tweets.csv'
+  date = str(datetime.datetime.now().date())
+  df['updated_at'] = date
+  download_from_s3(bucket, obj, save_path)
+  old_df = pd.read_csv(save_path)
+  df = pd.concat((old_df, df), ignore_index=True)
+  df['id'] = df.id.astype(str)
+  df.drop_duplicates(subset=['id'], inplace=True)
+  print(df)
+  df.to_csv(save_path, index=False)
+  upload_to_s3(bucket, obj, save_path)

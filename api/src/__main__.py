@@ -1,34 +1,22 @@
+import typing 
 from lib.adam import (
-  Adam,
+  get_user_infos,
+  get_tweet_counts,
+  get_tweets,
 )
 
 
-
-def main():
-  Adam()() 
-  # get = GetAuthFrom()
-  # auth = get.secrets_manager(
-  #   'adam-twitter',
-  # )
-  # params = Params()
-  # make = MakeRequest()
-  # request = make(
-  #   params=params,
-  # )
-  # send = SendRequest(auth)
-  # res = send(request).json()
-  # convert = ConvertTweet()
-  # print(res)
-  # res = convert(res['data'][0])
-  # print(res)
+def main() -> typing.NoReturn:
+  get_user_infos()
+  get_tweet_counts()
+  get_tweets()
 
 
 
-def lambda_handler(
-  event,
-  context,
-):
-  main()
+def lambda_handler(event, context) -> typing.NoReturn:
+  get_user_infos()
+  get_tweet_counts()
+  get_tweets()
 
 
 if __name__ == '__main__':
