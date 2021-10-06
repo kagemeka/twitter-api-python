@@ -5,7 +5,7 @@ class DatetimeFromStr():
   @staticmethod
   def rfc3339_format(s: str) -> datetime.datetime:
     f = '%Y-%m-%dT%H:%M:%S.%fZ'
-    return datetime.strptime(s, f)
+    return datetime.datetime.strptime(s, f)
 
 
 class DatetimeToRFC3339():
