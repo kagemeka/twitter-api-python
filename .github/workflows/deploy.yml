@@ -6,7 +6,14 @@ on:
     #   - main
     tags: 
       - v*
-  
+
+  release:
+    types: [created]
+
+  workflow_dispatch:
+
+
+
 jobs:
   build:
     name: build and push

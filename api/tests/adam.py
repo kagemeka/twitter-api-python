@@ -35,5 +35,5 @@ def test_get_tweet_cnts() -> typing.NoReturn:
 
 if __name__ == '__main__':
   # test_get_users()
-  test_get_tweets()
-  # test_get_tweet_cnts()
+  # test_get_tweets()
+  test_get_tweet_cnts()
